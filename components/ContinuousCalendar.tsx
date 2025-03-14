@@ -1,19 +1,30 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ReportConfig } from './ReportConfig';
+import { modals } from '@mantine/modals';
+import { SegmentedControl, Space, Text } from '@mantine/core';
+import { ReportConfigModal } from "./ReportConfigModal";
+import { Report } from './types/report';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 interface ContinuousCalendarProps {
-  onClick?: (_day:number, _month: number, _year: number) => void;
+  onClick?: (_day: number, _month: number, _year: number) => void;
+  inspectionDateMap: Map<string, Report[]>;
+  setInspectionDateMap: React.Dispatch<React.SetStateAction<Map<string, Report[]>>>;
+  dueDateMap: Map<string, Report[]>;
+  setDueDateMap: React.Dispatch<React.SetStateAction<Map<string, Report[]>>>;
+  isDemo: boolean;
 }
 
-export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
+export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick, inspectionDateMap, setInspectionDateMap, dueDateMap, setDueDateMap, isDemo }: ContinuousCalendarProps) => {
   const today = new Date();
   const dayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number>(0);
+  const [viewBy, setViewBy] = useState<string>('inspection');
   const monthOptions = monthNames.map((month, index) => ({ name: month, value: `${index}` }));
 
   const scrollToDay = (monthIndex: number, dayIndex: number) => {
@@ -39,7 +50,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
         });
       } else {
         const offset = window.scrollY + elementRect.top - (window.innerHeight / offsetFactor) + (elementRect.height / 2);
-  
+
         window.scrollTo({
           top: offset,
           behavior: 'smooth',
@@ -71,6 +82,26 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
     }
   }
 
+  const handleAddReport = () => {
+    const newReport: Report = {
+      reportId: "",
+      clientName: "",
+      inspectionDate: new Date(),
+      dueDate: null,
+      expedited: false,
+      tags: [],
+      notes: "",
+      status: "waiting",
+    };
+
+    modals.open({
+      title: 'Add new report',
+      children: (
+        <ReportConfigModal report={newReport} isDemo={isDemo} />
+      ),
+    });
+  }
+
   const generateCalendar = useMemo(() => {
     const today = new Date();
 
@@ -99,7 +130,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
           daysInYear.push({ month: 0, day });
         }
       }
-    
+
       return daysInYear;
     };
 
@@ -117,6 +148,10 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
           const isNewMonth = index === 0 || calendarDays[index - 1].month !== month;
           const isToday = today.getMonth() === month && today.getDate() === day && today.getFullYear() === year;
 
+          // get the reports from corresponding hash map.
+          const currDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const reports = viewBy === "inspection" ? inspectionDateMap.get(currDate) || [] : dueDateMap.get(currDate) || [];
+
           return (
             <div
               key={`${month}-${day}`}
@@ -124,7 +159,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
               data-month={month}
               data-day={day}
               onClick={() => handleDayClick(day, month, year)}
-              className={`relative z-10 m-[-0.5px] group aspect-square w-full grow cursor-pointer rounded-xl border font-medium transition-all hover:z-20 hover:border-cyan-400 sm:-m-px sm:size-20 sm:rounded-2xl sm:border-2 lg:size-36 lg:rounded-3xl 2xl:size-40`}
+              className={`relative z-10 m-[-0.5px] group aspect-square w-full grow cursor-pointer rounded-xl border font-medium transition-all hover:z-20 hover:border-cyan-400 sm:-m-px sm:size-20 sm:rounded-2xl sm:border-2 lg:size-36 lg:rounded-3xl 2xl:size-40 flex flex-col items-center justify-center`}
             >
               <span className={`absolute left-1 top-1 flex size-5 items-center justify-center rounded-full text-xs sm:size-6 sm:text-sm lg:left-2 lg:top-2 lg:size-8 lg:text-base ${isToday ? 'bg-blue-500 font-semibold text-white' : ''} ${month < 0 ? 'text-slate-400' : 'text-slate-800'}`}>
                 {day}
@@ -136,9 +171,16 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
               )}
               <button type="button" className="absolute right-2 top-2 rounded-full opacity-0 transition-all focus:opacity-100 group-hover:opacity-100">
                 <svg className="size-8 scale-90 text-blue-500 transition-all hover:scale-100 group-focus:scale-100" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z" clipRule="evenodd"/>
+                  <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z" clipRule="evenodd" />
                 </svg>
               </button>
+
+              <div className='flex flex-col gap-y-1'>
+                {reports.map((report) => (
+                  <ReportConfig key={report.reportId} report={report} isDemo={isDemo} />
+                ))}
+              </div>
+
             </div>
           );
         })}
@@ -146,7 +188,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
     ));
 
     return calendar;
-  }, [year]);
+  }, [year, viewBy, inspectionDateMap, dueDateMap]);
 
   useEffect(() => {
     const calendarContainer = document.querySelector('.calendar-container');
@@ -173,6 +215,9 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
       }
     });
 
+    // Jump to today when page loads
+    handleTodayClick();
+
     return () => {
       observer.disconnect();
     };
@@ -187,17 +232,30 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
             <button onClick={handleTodayClick} type="button" className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-100 lg:px-5 lg:py-2.5">
               Today
             </button>
-            <button type="button" className="whitespace-nowrap rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-1.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-cyan-300 sm:rounded-xl lg:px-5 lg:py-2.5">
-              + Add Event
+            <button onClick={handleAddReport} type="button" className="whitespace-nowrap rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-1.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-cyan-300 sm:rounded-xl lg:px-5 lg:py-2.5">
+              + Add Report
             </button>
           </div>
           <div className="flex w-fit items-center justify-between">
+            <div className='flex gap-x-2 items-center justify-center'>
+              <Text size="md" fw={500} span>View by:</Text>
+              <SegmentedControl
+                value={viewBy}
+                onChange={setViewBy}
+                data={[
+                  { label: 'Inspection Date', value: 'inspection' },
+                  { label: 'Due Date', value: 'due' },
+                ]}
+              />
+            </div>
+            <Space w="xs" />
+
             <button
               onClick={handlePrevYear}
               className="rounded-full border border-slate-300 p-1 transition-colors hover:bg-slate-100 sm:p-2"
             >
               <svg className="size-5 text-slate-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m15 19-7-7 7-7"/>
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m15 19-7-7 7-7" />
               </svg>
             </button>
             <h1 className="min-w-16 text-center text-lg font-semibold sm:min-w-20 sm:text-xl">{year}</h1>
@@ -206,7 +264,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
               className="rounded-full border border-slate-300 p-1 transition-colors hover:bg-slate-100 sm:p-2"
             >
               <svg className="size-5 text-slate-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m9 5 7 7-7 7"/>
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m9 5 7 7-7 7" />
               </svg>
             </button>
           </div>

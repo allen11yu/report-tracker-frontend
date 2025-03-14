@@ -15,13 +15,25 @@ select {
 }
 
 @layer utilities {
+
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   /* Hide scrollbar for IE, Edge and Firefox */
   .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }
+
+/* Mantine styles for this project */
+@import "@mantine/core/styles.css";
+@import '@mantine/notifications/styles.css';
+@import '@mantine/dates/styles.css';
+
+
+/* Testing */
