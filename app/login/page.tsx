@@ -36,8 +36,6 @@ export default function LoginPage() {
 
     const handleLogin = async () => {
         setErrorMessage(null);
-        console.log("Logging in with:", form.values);
-
         const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/auth/login", {
             method: "POST",
             headers: {
@@ -52,9 +50,7 @@ export default function LoginPage() {
 
         if (response.ok) {
             const data = await response.json();
-            console.log("Login successful", data);
             if (data.expiresIn === "1 day") {
-                console.log("Remember me is not checked, expired in: ", data.expiresIn);
                 Cookies.set("token", data.token,
                     {
                         secure: true,
@@ -62,7 +58,6 @@ export default function LoginPage() {
                         expires: 1
                     });
             } else {
-                console.log("Remember me is checked, expired in: ", data.expiresIn);
                 Cookies.set("token", data.token,
                     {
                         secure: true,
