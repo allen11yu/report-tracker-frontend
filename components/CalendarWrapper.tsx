@@ -7,8 +7,6 @@ import { ReportConfigModal } from "./ReportConfigModal";
 import { Report } from './types/report';
 import Cookies from 'js-cookie';
 
-const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
 interface CalendarWrapperProps {
   isDemo: boolean;
 }
@@ -47,7 +45,6 @@ export default function CalendarWrapper({ isDemo }: CalendarWrapperProps) {
         return acc;
       }, new Map<string, Report[]>());
 
-      console.log(dueMap);
       setInspectionDateMap(new Map(inspectionMap));
       setDueDateMap(new Map(dueMap));
     };
@@ -74,8 +71,6 @@ export default function CalendarWrapper({ isDemo }: CalendarWrapperProps) {
   }, []);
 
   const onClickHandler = (day: number, month: number, year: number) => {
-    console.log(`Clicked on ${monthNames[month]} ${day}, ${year}`)
-    console.log(year, month, day);
     const newReport: Report = {
       reportId: "",
       clientName: "",

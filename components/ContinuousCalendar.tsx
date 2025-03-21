@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ReportConfig } from './ReportConfig';
 import { modals } from '@mantine/modals';
 import { SegmentedControl, Space, Text } from '@mantine/core';
 import { ReportConfigModal } from "./ReportConfigModal";

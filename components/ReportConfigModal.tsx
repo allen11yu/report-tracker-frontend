@@ -65,8 +65,7 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
 
         const saveToDatabase = async (reportId: string) => {
             const token = Cookies.get("token");
-            console.log("Updating!!!!! to the database");
-            const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/reports/update", {
+            await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/reports/update", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -83,8 +82,6 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
                     "status": activeStatus
                 })
             });
-            const data = await response.json();
-            console.log(data);
         }
 
         const saveToMap = (newReport: Report) => {
@@ -104,7 +101,6 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
                 }
 
                 const newDateString = newReport.inspectionDate.toISOString().split("T")[0];
-                console.log("pushing ins");
                 const newReports = [...(updatedMap.get(newDateString) || []), newReport];
                 updatedMap.set(newDateString, newReports);
                 return updatedMap;
@@ -123,7 +119,6 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
                 }
 
                 const newDateString = newReport.dueDate.toISOString().split("T")[0];
-                console.log("pushing due");
                 const newReports = [...(updatedMap.get(newDateString) || []), newReport];
                 updatedMap.set(newDateString, newReports);
                 return updatedMap;
@@ -137,10 +132,8 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
 
         let newReportId: string = "";
         if (!isDemo) {
-            console.log("Not demo, performing database operation");
             if (!report.reportId) {
                 newReportId = await addToDatabase();
-                console.log("New report id", newReportId);
             } else {
                 newReportId = report.reportId;
                 const oldInspectionDateString = report.inspectionDate.toISOString().split("T")[0];
@@ -158,7 +151,6 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
                         "status": activeStatus || "waiting"
                     })
                 ) {
-                    console.log("Report not equal, updating to database");
                     saveToDatabase(report.reportId);
                 }
             }
@@ -178,7 +170,6 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
 
         const saveIcon = <IconDeviceFloppy size={20} />
         modals.closeAll();
-        console.log("Saving");
         notifications.show({
             title: 'Report saved',
             message: `Client name: ${clientName}`,
@@ -218,14 +209,12 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
 
         const handleConfirmDelete = () => {
             if (!isDemo) {
-                console.log("deleting from database");
                 deleteFromDatabase(report.reportId);
             }
             deleteFromMap(report.reportId);
 
             const deleteIcon = <IconTrash size={20} />
             modals.closeAll();
-            console.log("Deleting");
             notifications.show({
                 title: 'Report deleted',
                 message: `Client name: ${clientName}`,
@@ -245,7 +234,6 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
             ),
             labels: { confirm: 'Delete report', cancel: "No don't delete it" },
             confirmProps: { color: 'red' },
-            onCancel: () => console.log('Cancel'),
             onConfirm: handleConfirmDelete,
         });
     };
@@ -266,17 +254,12 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
     }
 
     const updateDueDate = (insDate: DateValue, isExpedited: boolean) => {
-        console.log("Updating due date");
-
         let newDueDate;
         if (isExpedited) {
-            console.log("Report is expedited");
             newDueDate = bDays.addDays(insDate ?? today, REPORT_EXP_DAYS_DUE);
         } else {
-            console.log("Report is NOT expedited");
             newDueDate = bDays.addDays(insDate ?? today, REPORT_NORMAL_DAYS_DUE);
         }
-        console.log("Setting new due date:", newDueDate.toDate());
         setDueDate(newDueDate.toDate());
     }
 
@@ -350,5 +333,7 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
                 </div>
             </form>
         </>
+
+
     )
 }
