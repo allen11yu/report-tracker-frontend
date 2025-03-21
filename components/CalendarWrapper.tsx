@@ -19,10 +19,15 @@ export default function CalendarWrapper({ isDemo }: CalendarWrapperProps) {
 
   useEffect(() => {
     const groupReports = (reports: Report[]) => {
+      // Make sure the dates are formatted correctly
+      reports.forEach((report) => {
+        report.inspectionDate = new Date(report.inspectionDate + "T00:00:00");
+        report.dueDate = new Date(report.dueDate + "T00:00:00");
+      });
+
       // Group by inspection date
       const inspectionMap = reports.reduce((acc: Map<string, Report[]>, report: Report) => {
-        const inspectionDate = String(report.inspectionDate);
-
+        const inspectionDate = report.inspectionDate.toISOString().split("T")[0];
         if (!acc.has(inspectionDate)) {
           acc.set(inspectionDate, []);
         }
@@ -33,8 +38,7 @@ export default function CalendarWrapper({ isDemo }: CalendarWrapperProps) {
 
       // Group by due date
       const dueMap = reports.reduce((acc: Map<string, Report[]>, report: Report) => {
-        const dueDate = String(report.dueDate);
-
+        const dueDate = report.dueDate.toISOString().split("T")[0];
         if (!acc.has(dueDate)) {
           acc.set(dueDate, []);
         }
@@ -43,6 +47,7 @@ export default function CalendarWrapper({ isDemo }: CalendarWrapperProps) {
         return acc;
       }, new Map<string, Report[]>());
 
+      console.log(dueMap);
       setInspectionDateMap(new Map(inspectionMap));
       setDueDateMap(new Map(dueMap));
     };
@@ -75,7 +80,7 @@ export default function CalendarWrapper({ isDemo }: CalendarWrapperProps) {
       reportId: "",
       clientName: "",
       inspectionDate: new Date(year, month, day),
-      dueDate: null,
+      dueDate: new Date(year, month, day),
       expedited: false,
       tags: [],
       notes: "",
@@ -85,7 +90,14 @@ export default function CalendarWrapper({ isDemo }: CalendarWrapperProps) {
     modals.open({
       title: 'Add new report',
       children: (
-        <ReportConfigModal report={newReport} isDemo={isDemo} />
+        <ReportConfigModal
+          report={newReport}
+          isDemo={isDemo}
+          inspectionDateMap={inspectionDateMap}
+          setInspectionDateMap={setInspectionDateMap}
+          dueDateMap={dueDateMap}
+          setDueDateMap={setDueDateMap}
+        />
       ),
     });
   }

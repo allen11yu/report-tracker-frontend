@@ -6,9 +6,14 @@ import { Report } from './types/report';
 interface ReportConfigProps {
     report: Report;
     isDemo: boolean;
+    onClick?: () => void;
+    inspectionDateMap: Map<string, Report[]>;
+    setInspectionDateMap: React.Dispatch<React.SetStateAction<Map<string, Report[]>>>;
+    dueDateMap: Map<string, Report[]>;
+    setDueDateMap: React.Dispatch<React.SetStateAction<Map<string, Report[]>>>;
 }
 
-export function ReportConfig({ report, isDemo }: ReportConfigProps) {
+export function ReportConfig({ report, isDemo, onClick, inspectionDateMap, setInspectionDateMap, dueDateMap, setDueDateMap }: ReportConfigProps) {
     return (
         <Button
             size="compact-xs"
@@ -16,10 +21,18 @@ export function ReportConfig({ report, isDemo }: ReportConfigProps) {
             color={report.status === "completed" ? "green" : "black"}
             onClick={(e) => {
                 e.stopPropagation();
+                onClick?.();
                 modals.open({
                     title: 'Report Details',
                     children: (
-                        <ReportConfigModal report={report} isDemo={isDemo} />
+                        <ReportConfigModal
+                            report={report}
+                            isDemo={isDemo}
+                            inspectionDateMap={inspectionDateMap}
+                            setInspectionDateMap={setInspectionDateMap}
+                            dueDateMap={dueDateMap}
+                            setDueDateMap={setDueDateMap}
+                        />
                     ),
                 });
             }}

@@ -6,6 +6,8 @@ import { modals } from '@mantine/modals';
 import { SegmentedControl, Space, Text } from '@mantine/core';
 import { ReportConfigModal } from "./ReportConfigModal";
 import { Report } from './types/report';
+import { ReportConfigOverflowList } from './ReportConfigOverflowList';
+import { NUM_REPORT_PER_LIST } from './constants';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -24,7 +26,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick,
   const dayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number>(0);
-  const [viewBy, setViewBy] = useState<string>('inspection');
+  const [viewBy, setViewBy] = useState<string>('due');
   const monthOptions = monthNames.map((month, index) => ({ name: month, value: `${index}` }));
 
   const scrollToDay = (monthIndex: number, dayIndex: number) => {
@@ -87,7 +89,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick,
       reportId: "",
       clientName: "",
       inspectionDate: new Date(),
-      dueDate: null,
+      dueDate: new Date(),
       expedited: false,
       tags: [],
       notes: "",
@@ -97,7 +99,14 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick,
     modals.open({
       title: 'Add new report',
       children: (
-        <ReportConfigModal report={newReport} isDemo={isDemo} />
+        <ReportConfigModal
+          report={newReport}
+          isDemo={isDemo}
+          inspectionDateMap={inspectionDateMap}
+          setInspectionDateMap={setInspectionDateMap}
+          dueDateMap={dueDateMap}
+          setDueDateMap={setDueDateMap}
+        />
       ),
     });
   }
@@ -176,9 +185,15 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick,
               </button>
 
               <div className='flex flex-col gap-y-1'>
-                {reports.map((report) => (
-                  <ReportConfig key={report.reportId} report={report} isDemo={isDemo} />
-                ))}
+                <ReportConfigOverflowList
+                  reports={reports}
+                  numPerList={NUM_REPORT_PER_LIST}
+                  isDemo={isDemo}
+                  inspectionDateMap={inspectionDateMap}
+                  setInspectionDateMap={setInspectionDateMap}
+                  dueDateMap={dueDateMap}
+                  setDueDateMap={setDueDateMap}
+                />
               </div>
 
             </div>
@@ -228,7 +243,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick,
       <div className="sticky -top-px z-50 w-full rounded-t-2xl bg-white px-5 pt-7 sm:px-8 sm:pt-8">
         <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-6">
           <div className="flex flex-wrap gap-2 sm:gap-3">
-            <Select name="" value={`${selectedMonth}`} options={monthOptions} onChange={handleMonthChange} />
+            <Select name="month" value={`${selectedMonth}`} options={monthOptions} onChange={handleMonthChange} />
             <button onClick={handleTodayClick} type="button" className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-100 lg:px-5 lg:py-2.5">
               Today
             </button>
