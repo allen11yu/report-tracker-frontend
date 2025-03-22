@@ -1,0 +1,3 @@
+/reports/*  http://report-tracker-springboot-env.eba-mtiadbhg.us-west-1.elasticbeanstalk.com/reports/:splat  200
+/demo/reports  http://report-tracker-springboot-env.eba-mtiadbhg.us-west-1.elasticbeanstalk.com/demo/reports  200
+/auth/login  http://report-tracker-springboot-env.eba-mtiadbhg.us-west-1.elasticbeanstalk.com/auth/login  200
