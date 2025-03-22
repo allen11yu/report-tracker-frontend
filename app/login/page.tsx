@@ -29,8 +29,8 @@ export default function LoginPage() {
             rememberMe: false,
         },
         validate: {
-            username: (value) => (value.trim() ? null : "Username is required"),
-            password: (value) => (value.trim() ? null : "Password is required"),
+            username: (value: string) => (value.trim() ? null : "Username is required"),
+            password: (value: string) => (value.trim() ? null : "Password is required"),
         },
     });
 
