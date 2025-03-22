@@ -19,9 +19,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-mantine-color-scheme="light">
-      <head>
-        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-      </head>
       <body className={inter.className}>
         <MantineProvider>
           <Notifications />
