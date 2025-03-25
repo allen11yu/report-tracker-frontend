@@ -50,15 +50,24 @@ export default function CalendarWrapper({ isDemo }: CalendarWrapperProps) {
     };
 
     const fetchReports = async (url: string) => {
-      const token = Cookies.get("token");
-      const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      const reports = await response.json();
+      let reports: any;
+      if (url === "/demo/reports") {
+        const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + url, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        reports = await response.json();
+      } else {
+        const token = Cookies.get("token");
+        const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+        reports = await response.json();
+      }
       groupReports(reports);
     }
 
