@@ -157,7 +157,7 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
         }
 
         const newReport: Report = {
-            "reportId": newReportId,
+            "reportId": newReportId === "" ? report.reportId : newReportId,
             "clientName": clientName,
             "inspectionDate": inspectionDate || new Date(),
             "dueDate": dueDate || new Date(),
