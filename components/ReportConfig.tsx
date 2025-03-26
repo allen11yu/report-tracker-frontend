@@ -16,6 +16,7 @@ interface ReportConfigProps {
 export function ReportConfig({ report, isDemo, onClick, inspectionDateMap, setInspectionDateMap, dueDateMap, setDueDateMap }: ReportConfigProps) {
     return (
         <Button
+            className='w-full'
             size="compact-xs"
             variant={report.status === "completed" ? "filled" : "light"}
             color={report.status === "completed" ? "green" : "black"}
@@ -37,7 +38,7 @@ export function ReportConfig({ report, isDemo, onClick, inspectionDateMap, setIn
                 });
             }}
         >
-            <p className='truncate w-32'>{report.clientName}</p>
+            <p className='truncate w-full'>{report.clientName}</p>
         </Button>
     );
 }

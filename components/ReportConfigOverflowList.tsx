@@ -53,9 +53,9 @@ export function ReportConfigOverflowList({ reports, numPerList, isDemo, inspecti
                     ))
                 }
 
-                <Popover width={180} position="bottom" withArrow shadow="md" opened={opened} onChange={setOpened}>
+                <Popover width={150} position="bottom" withArrow shadow="md" opened={opened} onChange={setOpened}>
                     <Popover.Target>
-                        <Button size="compact-xs" variant="light" color="black" onClick={(e) => {
+                        <Button className="w-full" size="compact-xs" variant="light" color="black" onClick={(e) => {
                             e.stopPropagation();
                             setOpened((o) => !o);
                         }}>

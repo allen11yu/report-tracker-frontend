@@ -183,7 +183,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick,
                 </svg>
               </button>
 
-              <div className='flex flex-col gap-y-1'>
+              <div className='flex flex-col gap-y-1 justify-center items-center w-3/4'>
                 <ReportConfigOverflowList
                   reports={reports}
                   numPerList={NUM_REPORT_PER_LIST}
