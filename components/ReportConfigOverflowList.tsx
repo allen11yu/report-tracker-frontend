@@ -38,6 +38,7 @@ export function ReportConfigOverflowList({ reports, numPerList, isDemo, inspecti
     } else {
         const reportsNotOverflow = reports.slice(0, numPerList);
         const reportsOverflowen = reports.slice(numPerList);
+        const isAllOverflownReportCompleted = reportsOverflowen.every(report => report.status === "completed");
         content = (
             <>
                 {
@@ -55,10 +56,15 @@ export function ReportConfigOverflowList({ reports, numPerList, isDemo, inspecti
 
                 <Popover width={150} position="bottom" withArrow shadow="md" opened={opened} onChange={setOpened}>
                     <Popover.Target>
-                        <Button className="w-full" size="compact-xs" variant="light" color="black" onClick={(e) => {
-                            e.stopPropagation();
-                            setOpened((o) => !o);
-                        }}>
+                        <Button
+                            className="w-full"
+                            size="compact-xs"
+                            variant={isAllOverflownReportCompleted ? "filled" : "light"}
+                            color={isAllOverflownReportCompleted ? "green" : "black"}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setOpened((o) => !o);
+                            }}>
                             {`+${reportsOverflowen.length} more`}
                         </Button>
                     </Popover.Target>
