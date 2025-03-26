@@ -90,36 +90,44 @@ export function ReportConfigModal({ report, isDemo, inspectionDateMap, setInspec
 
             setInspectionDateMap((prevMap) => {
                 const updatedMap = new Map(prevMap);
-
-                // Remove the old date report and possibly the key
-                const oldReports = updatedMap.get(oldInspectionDateString) || [];
-                const filteredReports = oldReports.filter((report) => report.reportId !== newReport.reportId);
-                if (filteredReports.length > 0) {
-                    updatedMap.set(oldInspectionDateString, filteredReports);
-                } else {
-                    updatedMap.delete(oldInspectionDateString);
-                }
-
                 const newDateString = newReport.inspectionDate.toISOString().split("T")[0];
-                const newReports = [...(updatedMap.get(newDateString) || []), newReport];
+                const newReports = [...(updatedMap.get(newDateString) || [])];
+                if (oldInspectionDateString !== newDateString) {
+                    // Remove the old date report and possibly the key
+                    const oldReports = updatedMap.get(oldInspectionDateString) || [];
+                    const filteredReports = oldReports.filter((report) => report.reportId !== newReport.reportId);
+                    if (filteredReports.length > 0) {
+                        updatedMap.set(oldInspectionDateString, filteredReports);
+                    } else {
+                        updatedMap.delete(oldInspectionDateString);
+                    }
+                    newReports.push(newReport);
+                } else {
+                    const existingIndex = newReports.findIndex(report => report.reportId === newReport.reportId);
+                    newReports[existingIndex] = newReport;
+                }
                 updatedMap.set(newDateString, newReports);
                 return updatedMap;
             });
 
             setDueDateMap((prevMap) => {
                 const updatedMap = new Map(prevMap);
-
-                // Remove the old date report and possibly the key
-                const oldReports = updatedMap.get(oldDueDateString) || [];
-                const filteredReports = oldReports.filter((report) => report.reportId !== newReport.reportId);
-                if (filteredReports.length > 0) {
-                    updatedMap.set(oldDueDateString, filteredReports);
-                } else {
-                    updatedMap.delete(oldDueDateString);
-                }
-
                 const newDateString = newReport.dueDate.toISOString().split("T")[0];
-                const newReports = [...(updatedMap.get(newDateString) || []), newReport];
+                const newReports = [...(updatedMap.get(newDateString) || [])];
+                if (oldDueDateString !== newDateString) {
+                    // Remove the old date report and possibly the key
+                    const oldReports = updatedMap.get(oldDueDateString) || [];
+                    const filteredReports = oldReports.filter((report) => report.reportId !== newReport.reportId);
+                    if (filteredReports.length > 0) {
+                        updatedMap.set(oldDueDateString, filteredReports);
+                    } else {
+                        updatedMap.delete(oldDueDateString);
+                    }
+                    newReports.push(newReport);
+                } else {
+                    const existingIndex = newReports.findIndex(report => String(report.reportId) === String(newReport.reportId));
+                    newReports[existingIndex] = newReport;
+                }
                 updatedMap.set(newDateString, newReports);
                 return updatedMap;
             });
