@@ -6,6 +6,7 @@ import { modals } from '@mantine/modals';
 import { ReportConfigModal } from "./ReportConfigModal";
 import { Report } from './types/report';
 import Cookies from 'js-cookie';
+import { nanoid } from 'nanoid';
 
 interface CalendarWrapperProps {
   isDemo: boolean;
@@ -80,16 +81,30 @@ export default function CalendarWrapper({ isDemo }: CalendarWrapperProps) {
   }, []);
 
   const onClickHandler = (day: number, month: number, year: number) => {
-    const newReport: Report = {
-      reportId: "",
-      clientName: "",
-      inspectionDate: new Date(year, month, day),
-      dueDate: new Date(year, month, day),
-      expedited: false,
-      tags: [],
-      notes: "",
-      status: "waiting",
-    };
+    let newReport: Report;
+    if (isDemo) {
+      newReport = {
+        reportId: nanoid(),
+        clientName: "",
+        inspectionDate: new Date(year, month, day),
+        dueDate: new Date(year, month, day),
+        expedited: false,
+        tags: [],
+        notes: "",
+        status: "waiting",
+      };
+    } else {
+      newReport = {
+        reportId: "",
+        clientName: "",
+        inspectionDate: new Date(year, month, day),
+        dueDate: new Date(year, month, day),
+        expedited: false,
+        tags: [],
+        notes: "",
+        status: "waiting",
+      };
+    }
 
     modals.open({
       title: 'Add new report',

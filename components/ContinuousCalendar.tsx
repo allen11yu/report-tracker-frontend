@@ -7,6 +7,7 @@ import { ReportConfigModal } from "./ReportConfigModal";
 import { Report } from './types/report';
 import { ReportConfigOverflowList } from './ReportConfigOverflowList';
 import { NUM_REPORT_PER_LIST } from './constants';
+import { nanoid } from 'nanoid';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -21,7 +22,9 @@ interface ContinuousCalendarProps {
 }
 
 export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick, inspectionDateMap, setInspectionDateMap, dueDateMap, setDueDateMap, isDemo }: ContinuousCalendarProps) => {
-  const today = new Date();
+  const now = new Date();
+  const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  
   const dayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number>(0);
@@ -84,16 +87,30 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick,
   }
 
   const handleAddReport = () => {
-    const newReport: Report = {
-      reportId: "",
-      clientName: "",
-      inspectionDate: new Date(),
-      dueDate: new Date(),
-      expedited: false,
-      tags: [],
-      notes: "",
-      status: "waiting",
-    };
+    let newReport: Report;
+    if (isDemo) {
+      newReport = {
+        reportId: nanoid(),
+        clientName: "",
+        inspectionDate: new Date(),
+        dueDate: new Date(),
+        expedited: false,
+        tags: [],
+        notes: "",
+        status: "waiting",
+      };
+    } else {
+      newReport = {
+        reportId: "",
+        clientName: "",
+        inspectionDate: new Date(),
+        dueDate: new Date(),
+        expedited: false,
+        tags: [],
+        notes: "",
+        status: "waiting",
+      };
+    }
 
     modals.open({
       title: 'Add new report',
